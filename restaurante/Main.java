@@ -11,13 +11,10 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Menu menu = carregarMenu();
-        ArrayList<RequisicaoDeMesa> requisicoes = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
         ArrayList<Mesa> mesas = carregarMesas();
         ListaDeEspera listaDeEspera = carregarListaDeEspera(mesas);
-
-        // Carregar as requisições de mesa existentes da lista de espera
-        requisicoes.addAll(listaDeEspera.getListaRequisicao());
+        ArrayList<RequisicaoDeMesa> requisicoes = new ArrayList<>(listaDeEspera.getListaRequisicao());
+        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.println("\nEscolha uma opção:");
@@ -46,10 +43,10 @@ public class Main {
                 scanner.nextLine();
 
                 Mesa mesaDisponivel = mesas.stream()
-                        .filter(mesa -> mesa.isDisponivel() && mesa.getNumeroAssentos() >= lugares)
-                        .sorted(Comparator.comparingInt(Mesa::getNumeroAssentos))
-                        .findFirst()
-                        .orElse(null);
+                    .filter(mesa -> mesa.isDisponivel() && mesa.getNumeroAssentos() >= lugares)
+                    .sorted(Comparator.comparingInt(Mesa::getNumeroAssentos))
+                    .findFirst()
+                    .orElse(null);
 
                 if (mesaDisponivel != null) {
                     RequisicaoDeMesa requisicao = new RequisicaoDeMesa(nome, lugares, LocalTime.now(), mesaDisponivel);
@@ -78,56 +75,44 @@ public class Main {
             } else if (opcao == 6) {
                 System.out.println(menu.imprimirMenu());
             } else if (opcao == 7) {
-                System.out.print("Digite o número de lugares da mesa: ");
-                int numeroAssentos = scanner.nextInt();
-                scanner.nextLine();
-                Mesa mesaEscolhida = mesas.stream()
-                        .filter(mesa -> mesa.getNumeroAssentos() == numeroAssentos && !mesa.isDisponivel())
+                System.out.println("Escolha a Mesa: ");
+                requisicoes.forEach(requisicao -> System.out.println("Mesa: " + requisicao.getNomeCliente()));
+                String nome = scanner.nextLine();
+                RequisicaoDeMesa requisicaoEncontrada = requisicoes.stream()
+                    .filter(rm -> rm.getNomeCliente().equals(nome))
+                    .findFirst()
+                    .orElse(null);
+
+                if (requisicaoEncontrada != null) {
+                    System.out.println("Menu:\n" + menu.imprimirMenu());
+                    System.out.print("Digite o nome do item para adicionar ao pedido: ");
+                    String itemNome = scanner.nextLine();
+                    ItemMenu item = menu.getItens().stream()
+                        .filter(i -> i.getNome().equalsIgnoreCase(itemNome))
                         .findFirst()
                         .orElse(null);
 
-                if (mesaEscolhida != null) {
-                    System.out.print("Nome do Cliente: ");
-                    String nome = scanner.nextLine();
-                    RequisicaoDeMesa requisicaoEncontrada = requisicoes.stream()
-                            .filter(rm -> rm.getNomeCliente().equals(nome) && rm.getMesaAtribuida().equals(mesaEscolhida))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (requisicaoEncontrada != null) {
-                        System.out.println("Menu:\n" + menu.imprimirMenu());
-                        System.out.print("Digite o nome do item para adicionar ao pedido: ");
-                        String itemNome = scanner.nextLine();
-                        ItemMenu item = menu.getItens().stream()
-                                .filter(i -> i.getNome().equalsIgnoreCase(itemNome))
-                                .findFirst()
-                                .orElse(null);
-
-                        if (item != null) {
-                            requisicaoEncontrada.getPedido().adicionarItem(item);
-                            System.out.println("Item adicionado ao pedido!");
-                        } else {
-                            System.out.println("Item não encontrado no menu! :(");
-                        }
+                    if (item != null) {
+                        requisicaoEncontrada.getPedido().adicionarItem(item);
+                        System.out.println("Item adicionado ao pedido!");
                     } else {
-                        System.out.println("Cliente não encontrado!");
+                        System.out.println("Item não encontrado no menu! :(");
                     }
                 } else {
-                    System.out.println("Mesa não encontrada ou está disponível!");
+                    System.out.println("Mesa não encontrada!");
                 }
             } else if (opcao == 8) {
                 System.out.println("Escolha a Mesa: ");
-                requisicoes.forEach(requisicao -> System.out.println("Cliente: " + requisicao.getNomeCliente() + " - Mesa: " + requisicao.getMesaAtribuida().getNumeroAssentos() + " lugares"));
-                System.out.print("Nome do Cliente: ");
+                requisicoes.forEach(requisicao -> System.out.println("Mesa: " + requisicao.getNomeCliente()));
                 String nome = scanner.nextLine();
                 RequisicaoDeMesa requisicaoEncontrada = requisicoes.stream()
-                        .filter(rm -> rm.getNomeCliente().equals(nome))
-                        .findFirst()
-                        .orElse(null);
+                    .filter(rm -> rm.getNomeCliente().equals(nome))
+                    .findFirst()
+                    .orElse(null);
                 if (requisicaoEncontrada != null) {
                     System.out.println("Total a pagar: R$ " + requisicaoEncontrada.calculaConta());
                 } else {
-                    System.out.println("Cliente não encontrado!");
+                    System.out.println("Mesa não encontrada! :(");
                 }
             } else if (opcao == 9) {
                 System.out.println("\nEncerrando programa.");
@@ -137,15 +122,15 @@ public class Main {
                 int numeroAssentos = scanner.nextInt();
                 scanner.nextLine();
                 Mesa mesaEscolhida = mesas.stream()
-                        .filter(mesa -> mesa.getNumeroAssentos() == numeroAssentos && !mesa.isDisponivel())
-                        .findFirst()
-                        .orElse(null);
+                    .filter(mesa -> mesa.getNumeroAssentos() == numeroAssentos && !mesa.isDisponivel())
+                    .findFirst()
+                    .orElse(null);
 
                 if (mesaEscolhida != null) {
                     System.out.println("Clientes ocupando a mesa " + numeroAssentos + " lugares:");
                     requisicoes.stream()
-                            .filter(rm -> rm.getMesaAtribuida().equals(mesaEscolhida))
-                            .forEach(rm -> System.out.println("Cliente: " + rm.getNomeCliente()));
+                        .filter(rm -> rm.getMesaAtribuida().equals(mesaEscolhida))
+                        .forEach(rm -> System.out.println("Cliente: " + rm.getNomeCliente()));
                 } else {
                     System.out.println("Mesa não encontrada ou está disponível!");
                 }
@@ -154,22 +139,22 @@ public class Main {
                 int numeroAssentos = scanner.nextInt();
                 scanner.nextLine();
                 Mesa mesaEscolhida = mesas.stream()
-                        .filter(mesa -> mesa.getNumeroAssentos() == numeroAssentos && mesa.isDisponivel())
-                        .findFirst()
-                        .orElse(null);
+                    .filter(mesa -> mesa.getNumeroAssentos() == numeroAssentos && mesa.isDisponivel())
+                    .findFirst()
+                    .orElse(null);
 
                 if (mesaEscolhida != null) {
                     System.out.print("Nome do Cliente: ");
                     String nome = scanner.nextLine();
                     RequisicaoDeMesa requisicaoEncontrada = requisicoes.stream()
-                            .filter(rm -> rm.getNomeCliente().equals(nome) && rm.getQuantiaPessoas() <= numeroAssentos)
-                            .findFirst()
-                            .orElse(null);
+                        .filter(rm -> rm.getNomeCliente().equals(nome) && rm.getQuantiaPessoas() <= numeroAssentos)
+                        .findFirst()
+                        .orElse(null);
 
                     if (requisicaoEncontrada != null) {
                         mesaEscolhida.ocuparMesa();
-                        requisicaoEncontrada.setMesaAtribuida(mesaEscolhida); // Atualizar a mesa atribuída
-                        listaDeEspera.removerDaLista(requisicaoEncontrada); // Remover da lista de espera
+                        requisicaoEncontrada.setMesaAtribuida(mesaEscolhida); 
+                        listaDeEspera.removerDaLista(requisicaoEncontrada); 
                         System.out.println("Mesa ocupada com sucesso!");
                     } else {
                         System.out.println("Cliente não encontrado!");
@@ -182,9 +167,9 @@ public class Main {
                 int numeroAssentos = scanner.nextInt();
                 scanner.nextLine();
                 Mesa mesaEscolhida = mesas.stream()
-                        .filter(mesa -> mesa.getNumeroAssentos() == numeroAssentos && !mesa.isDisponivel())
-                        .findFirst()
-                        .orElse(null);
+                    .filter(mesa -> mesa.getNumeroAssentos() == numeroAssentos && !mesa.isDisponivel())
+                    .findFirst()
+                    .orElse(null);
 
                 if (mesaEscolhida != null) {
                     mesaEscolhida.desocuparMesa();
@@ -204,7 +189,7 @@ public class Main {
             return (Menu) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            return Menu.getInstance(); // Usar o método getInstance para retornar uma nova instância se ocorrer um erro
+            return Menu.getInstance(); 
         }
     }
 

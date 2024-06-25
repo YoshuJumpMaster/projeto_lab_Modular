@@ -9,30 +9,47 @@ import java.util.ArrayList;
 public class DataInitializer {
     public static void main(String[] args) {
         ArrayList<Mesa> mesas = new ArrayList<>();
-        mesas.add(new Mesa(4, true));
-        mesas.add(new Mesa(6, true));
+        for (int i = 0; i < 4; i++) {
+            mesas.add(new Mesa(4, true));
+            mesas.add(new Mesa(6, true));
+        }
+        mesas.add(new Mesa(8, true));
         mesas.add(new Mesa(8, true));
 
-        // Inicializar menu
         Menu menu = Menu.getInstance();
-        menu.adicionarItem("Hamburguer", 10.0);
-        menu.adicionarItem("Batata Frita", 5.0);
-        menu.adicionarItem("Refrigerante", 3.0);
+        menu.adicionarItem(new ItemMenu("Moqueca de Tilápia", 50.0));
+        menu.adicionarItem(new ItemMenu("Falafel Assado", 30.0));
+        menu.adicionarItem(new ItemMenu("Salada Primavera com Macarrão Konjac", 25.0));
+        menu.adicionarItem(new ItemMenu("Escondidinho de Frango", 40.0));
+        menu.adicionarItem(new ItemMenu("Strogonoff", 35.0));
+        menu.adicionarItem(new ItemMenu("Caçarola de carne com legumes", 45.0));
+        menu.adicionarItem(new ItemMenu("Água", 5.0));
+        menu.adicionarItem(new ItemMenu("Suco", 10.0));
+        menu.adicionarItem(new ItemMenu("Refrigerante", 7.0));
+        menu.adicionarItem(new ItemMenu("Cerveja", 12.0));
+        menu.adicionarItem(new ItemMenu("Taça de vinho", 15.0));
 
-        // Inicializar lista de espera com requisições de mesa
         ListaDeEspera listaDeEspera = new ListaDeEspera(mesas);
         RequisicaoDeMesa requisicao1 = new RequisicaoDeMesa("Cliente1", 4, LocalTime.now(), mesas.get(0));
-        listaDeEspera.adicionarNaLista(requisicao1);
-
         RequisicaoDeMesa requisicao2 = new RequisicaoDeMesa("Cliente2", 2, LocalTime.now(), mesas.get(1));
+
+        listaDeEspera.adicionarNaLista(requisicao1);
         listaDeEspera.adicionarNaLista(requisicao2);
 
-        try (ObjectOutputStream oosMesas = new ObjectOutputStream(new FileOutputStream("mesas.ser"));
-             ObjectOutputStream oosMenu = new ObjectOutputStream(new FileOutputStream("menu.ser"));
-             ObjectOutputStream oosListaDeEspera = new ObjectOutputStream(new FileOutputStream("listaDeEspera.ser"))) {
-            oosMesas.writeObject(mesas);
-            oosMenu.writeObject(menu);
-            oosListaDeEspera.writeObject(listaDeEspera);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("mesas.ser"))) {
+            oos.writeObject(mesas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("menu.ser"))) {
+            oos.writeObject(menu);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("listaDeEspera.ser"))) {
+            oos.writeObject(listaDeEspera);
         } catch (IOException e) {
             e.printStackTrace();
         }

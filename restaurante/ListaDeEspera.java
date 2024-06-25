@@ -2,10 +2,10 @@ package restaurante;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ListaDeEspera implements Serializable {
-
     private ArrayList<RequisicaoDeMesa> listaRequisicao;
     private ArrayList<RequisicaoDeMesa> historico;
     private ArrayList<Mesa> mesasDisponiveis;
@@ -29,50 +29,42 @@ public class ListaDeEspera implements Serializable {
     }
 
     public void removerDaListaPorNome(String nomeCliente) {
-        Iterator<RequisicaoDeMesa> it = listaRequisicao.iterator();
-        while (it.hasNext()) {
-            RequisicaoDeMesa requisicao = it.next();
-            if (requisicao.getNomeCliente().equals(nomeCliente)) {
-                it.remove();
+        listaRequisicao.stream()
+            .filter(requisicao -> requisicao.getNomeCliente().equals(nomeCliente))
+            .findFirst()
+            .ifPresent(requisicao -> {
                 requisicao.getMesaAtribuida().desocuparMesa();
-            }
-        }
+                listaRequisicao.remove(requisicao);
+            });
     }
 
     public String imprimirLista() {
-        StringBuilder sb = new StringBuilder();
-        for (RequisicaoDeMesa requisicao : listaRequisicao) {
-            sb.append("Cliente: ").append(requisicao.getNomeCliente())
-              .append(", Lugares: ").append(requisicao.getQuantiaPessoas())
-              .append(", Mesa: ").append(requisicao.getMesaAtribuida().getNumeroAssentos())
-              .append(" lugares\n");
-        }
-        return sb.toString();
+        return listaRequisicao.stream()
+            .map(requisicao -> "Cliente: " + requisicao.getNomeCliente() +
+                               ", Lugares: " + requisicao.getQuantiaPessoas() +
+                               ", Mesa: " + requisicao.getMesaAtribuida().getNumeroAssentos() + " lugares\n")
+            .collect(Collectors.joining());
     }
 
     public String imprimirHistorico() {
-        StringBuilder sb = new StringBuilder();
-        for (RequisicaoDeMesa requisicao : historico) {
-            sb.append("Cliente: ").append(requisicao.getNomeCliente())
-              .append(", Lugares: ").append(requisicao.getQuantiaPessoas())
-              .append("\n");
-        }
-        return sb.toString();
+        return historico.stream()
+            .map(requisicao -> "Cliente: " + requisicao.getNomeCliente() +
+                               ", Lugares: " + requisicao.getQuantiaPessoas() + "\n")
+            .collect(Collectors.joining());
     }
 
     public String imprimirCliente(String nomeCliente) {
-        for (RequisicaoDeMesa requisicao : listaRequisicao) {
-            if (requisicao.getNomeCliente().equals(nomeCliente)) {
-                return "Cliente: " + requisicao.getNomeCliente() +
-                       ", Número de assentos: " + requisicao.getQuantiaPessoas() +
-                       ", Hora de entrada: " + requisicao.getHoraEntrada().toString() +
-                       ", Mesa: " + requisicao.getMesaAtribuida().getNumeroAssentos() + " lugares";
-            }
-        }
-        return "Cliente não encontrado na lista.";
+        return listaRequisicao.stream()
+            .filter(requisicao -> requisicao.getNomeCliente().equals(nomeCliente))
+            .map(requisicao -> "Cliente: " + requisicao.getNomeCliente() +
+                               ", Número de assentos: " + requisicao.getQuantiaPessoas() +
+                               ", Hora de entrada: " + requisicao.getHoraEntrada().toString() +
+                               ", Mesa: " + requisicao.getMesaAtribuida().getNumeroAssentos() + " lugares")
+            .findFirst()
+            .orElse("Cliente não encontrado na lista.");
     }
 
-    public ArrayList<RequisicaoDeMesa> getListaRequisicao() {
+    public List<RequisicaoDeMesa> getListaRequisicao() {
         return listaRequisicao;
     }
 }

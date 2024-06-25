@@ -3,9 +3,9 @@ package restaurante;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Pedido implements Serializable {
-    private static final long serialVersionUID = 1L;
     private List<ItemMenu> itens;
     private double total;
 
@@ -26,7 +26,7 @@ public class Pedido implements Serializable {
     }
 
     public double calcularTotal() {
-        return total * 1.1; 
+        return total * 1.1; // Taxa de serviço de 10%
     }
 
     public List<ItemMenu> getItens() {
@@ -40,11 +40,9 @@ public class Pedido implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder pedido_carrier = new StringBuilder();
-        for (ItemMenu item : itens) {
-            pedido_carrier.append(item.toString()).append("\n");
-        }
-        pedido_carrier.append("Total: R$ ").append(total).append("\n");
-        return pedido_carrier.toString();
+        String pedido = itens.stream()
+            .map(ItemMenu::toString)
+            .collect(Collectors.joining("\n"));
+        return pedido + "\nTotal: R$ " + total + "\n";
     }
 }
