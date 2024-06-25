@@ -9,6 +9,7 @@ public class Pedido implements Serializable {
     private static final long serialVersionUID = 1L;
     private Map<String, Double> itens;
     private LocalDateTime horaEntrada;
+    private Cliente cliente; 
 
     public Pedido() {
         this.itens = new HashMap<>();
@@ -37,5 +38,13 @@ public class Pedido implements Serializable {
 
     public LocalDateTime getData() {
         return horaEntrada;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 }

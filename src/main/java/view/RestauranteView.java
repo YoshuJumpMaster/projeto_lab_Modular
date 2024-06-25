@@ -105,6 +105,7 @@ public class RestauranteView {
                     controller.carregarDados(FILE_PATH);
                     atualizarFilaEspera();
                     atualizarMesas();
+                    adicionarEventosMesas();  // Adicionar eventos novamente
                     JOptionPane.showMessageDialog(frame, "Dados carregados com sucesso!");
                 } catch (IOException | ClassNotFoundException ex) {
                     JOptionPane.showMessageDialog(frame, "Erro ao carregar dados: " + ex.getMessage());
@@ -187,6 +188,23 @@ public class RestauranteView {
         frame.setVisible(true);
     }
 
+    private void adicionarEventosMesas() {
+        Component[] components = ((JPanel) frame.getContentPane().getComponent(0)).getComponents();
+        for (int i = 0; i < components.length; i++) {
+            JButton btnMesa = (JButton) components[i];
+            int index = i;
+            btnMesa.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    Mesa mesa = controller.getMesas().get(index);
+                    if (mesa.isOcupada()) {
+                        showPopupMenu(e, index);
+                    }
+                }
+            });
+        }
+    }
+
     private String getTextoMesa(Mesa mesa) {
         if (mesa.isOcupada()) {
             return "Mesa " + mesa.getCapacidade() + " pessoas\n(" + mesa.getCliente().getNome() + ")";
@@ -205,7 +223,7 @@ public class RestauranteView {
     private void expandirFilaEspera() {
         Dimension newSize = filaEsperaScrollPane.getPreferredSize();
         if (newSize.width == 200) {
-            newSize = new Dimension(400, 600);
+            newSize = new Dimension(400, 600); 
         } else {
             newSize = new Dimension(200, 300); 
         }

@@ -1,13 +1,12 @@
 package controller;
 
+import java.io.IOException;
+import java.util.List;
 import model.Cardapio;
 import model.Cliente;
 import model.Mesa;
 import model.Pedido;
 import model.Restaurante;
-
-import java.io.IOException;
-import java.util.List;
 
 public class RestauranteController {
     private Restaurante restaurante;
@@ -64,6 +63,7 @@ public class RestauranteController {
         if (mesa.isOcupada()) {
             Pedido pedido = new Pedido();
             pedido.adicionarItem(item, restaurante.getCardapio().getPratos().getOrDefault(item, 0.0));
+            pedido.setCliente(mesa.getCliente());
             adicionarPedido(pedido);
         }
     }
@@ -73,11 +73,10 @@ public class RestauranteController {
         Cliente cliente = mesa.getCliente();
         double total = 0.0;
         for (Pedido pedido : restaurante.getPedidos()) {
-            
-            if (pedido.getData().isAfter(cliente.getHoraEntrada())) {
+            if (pedido.getCliente().equals(cliente)) {
                 total += pedido.getValorTotal();
             }
         }
-        return total * 1.10; 
+        return total * 1.10; // taxa
     }
 }
