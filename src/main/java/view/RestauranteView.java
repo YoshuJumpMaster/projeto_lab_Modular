@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.List;
 
 public class RestauranteView {
     private JFrame frame;
@@ -53,7 +54,7 @@ public class RestauranteView {
         }
 
         JPanel panelCliente = new JPanel();
-        panelCliente.setLayout(new GridLayout(4, 2));
+        panelCliente.setLayout(new GridLayout(5, 2)); 
 
         JLabel lblNome = new JLabel("Nome do Cliente:");
         lblNome.setFont(DEFAULT_FONT);
@@ -105,7 +106,7 @@ public class RestauranteView {
                     controller.carregarDados(FILE_PATH);
                     atualizarFilaEspera();
                     atualizarMesas();
-                    adicionarEventosMesas();  // Adicionar eventos novamente
+                    adicionarEventosMesas();  
                     JOptionPane.showMessageDialog(frame, "Dados carregados com sucesso!");
                 } catch (IOException | ClassNotFoundException ex) {
                     JOptionPane.showMessageDialog(frame, "Erro ao carregar dados: " + ex.getMessage());
@@ -118,7 +119,7 @@ public class RestauranteView {
         btnPedidos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                atualizarPedidos();
+                mostrarPedidos();
             }
         });
 
@@ -236,6 +237,30 @@ public class RestauranteView {
         for (Pedido pedido : controller.getPedidos()) {
             pedidosText.append("Pedido: " + pedido.getItens() + " - Total: " + pedido.calcularValorComServico() + "\n");
         }
+    }
+
+    private void mostrarPedidos() {
+        StringBuilder sb = new StringBuilder();
+        List<Pedido> pedidos = controller.getPedidos();
+        double totalPedidos = 0.0;
+
+        for (Pedido pedido : pedidos) {
+            sb.append("Pedido: ").append(pedido.getItens())
+              .append(" - Total: R$").append(pedido.getValorTotal()).append("\n");
+            totalPedidos += pedido.getValorTotal();
+        }
+
+        sb.append("\nNúmero total de pedidos: ").append(pedidos.size());
+        sb.append("\nSoma total dos valores dos pedidos: R$").append(totalPedidos);
+
+        JTextArea textArea = new JTextArea(sb.toString());
+        textArea.setFont(DEFAULT_FONT);
+        textArea.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(400, 300));
+
+        JOptionPane.showMessageDialog(frame, scrollPane, "Pedidos", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void atualizarMesas() {
