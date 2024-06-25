@@ -16,6 +16,7 @@ public class Main {
         ArrayList<Mesa> mesas = carregarMesas();
         ListaDeEspera listaDeEspera = carregarListaDeEspera(mesas);
 
+        // Carregar as requisições de mesa existentes da lista de espera
         requisicoes.addAll(listaDeEspera.getListaRequisicao());
 
         while (true) {
@@ -167,7 +168,8 @@ public class Main {
 
                     if (requisicaoEncontrada != null) {
                         mesaEscolhida.ocuparMesa();
-                        requisicaoEncontrada.setMesaAtribuida(mesaEscolhida); 
+                        requisicaoEncontrada.setMesaAtribuida(mesaEscolhida); // Atualizar a mesa atribuída
+                        listaDeEspera.removerDaLista(requisicaoEncontrada); // Remover da lista de espera
                         System.out.println("Mesa ocupada com sucesso!");
                     } else {
                         System.out.println("Cliente não encontrado!");
@@ -202,7 +204,7 @@ public class Main {
             return (Menu) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            return Menu.getInstance(); 
+            return Menu.getInstance(); // Usar o método getInstance para retornar uma nova instância se ocorrer um erro
         }
     }
 

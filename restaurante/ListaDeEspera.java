@@ -26,7 +26,6 @@ public class ListaDeEspera implements Serializable {
 
     public void removerDaLista(RequisicaoDeMesa requisicao) {
         this.listaRequisicao.remove(requisicao);
-        requisicao.getMesaAtribuida().desocuparMesa();
     }
 
     public void removerDaListaPorNome(String nomeCliente) {
