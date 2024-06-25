@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Menu implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private static Menu instance;
-    private List<ItemMenu> itens;
+    private static final long serialVersionUID = 1L; 
 
-    public Menu() {
+    private List<ItemMenu> itens;
+    private static Menu instance;
+
+    private Menu() {
         this.itens = new ArrayList<>();
+        itens.add(new ItemMenu("Hamburguer", 10.0));
+        itens.add(new ItemMenu("Batata Frita", 5.0));
+        itens.add(new ItemMenu("Refrigerante", 3.0));
     }
 
     public static Menu getInstance() {

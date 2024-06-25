@@ -4,14 +4,13 @@ import java.io.Serializable;
 import java.time.LocalTime;
 
 public class RequisicaoDeMesa implements Serializable {
-    private static final long serialVersionUID = 1L;
+
     private String nomeCliente;
     private int quantiaPessoas;
     private LocalTime horaEntrada;
     private LocalTime horaSaida;
     private Mesa mesaAtribuida;
     private Pedido pedido;
-    private double conta;
 
     public RequisicaoDeMesa(String nomeCliente, int quantiaPessoas, LocalTime horaEntrada, Mesa mesa) {
         this.nomeCliente = nomeCliente;
@@ -19,7 +18,6 @@ public class RequisicaoDeMesa implements Serializable {
         this.horaEntrada = horaEntrada;
         this.mesaAtribuida = mesa;
         this.pedido = new Pedido();
-        this.conta = 0;
     }
 
     public String getNomeCliente() {
